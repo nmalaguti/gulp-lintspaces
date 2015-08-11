@@ -1,8 +1,10 @@
 var
 	es          = require('event-stream'),
 	Lintspaces  = require('lintspaces'),
+	gutil       = require('gulp-util'),
 	PluginError = require('gulp-util').PluginError,
-	colors      = require('gulp-util').colors
+	colors      = require('gulp-util').colors,
+	util        = require('util')
 ;
 
 module.exports = function(options) {
@@ -32,19 +34,19 @@ module.exports.reporter = function() {
 		if (file.lintspaces && Object.keys(file.lintspaces).length) {
 			for (var line in file.lintspaces) {
 				file.lintspaces[line].forEach(function(error) {
-					console.error(
-						'[%s] %s in (%s:%d)\n',
-						colors.green('gulp-lintspaces'),
-						colors.red(error),
-						file.path,
+					gutil.log(util.format(
+						'[%s] %s (%s:%d)',
+						colors.cyan('gulp-lintspaces'),
+						colors.red(error.message),
+						colors.magenta(file.path),
 						line
-					);
+					));
 				});
 			}
 		}
 
 		if (Object.keys(file.lintspaces).length) {
-			this.emit('error', new PluginError("lint-spaces", "Failed linting spaces"));
+			this.emit('error', new PluginError("lintspaces", "Failed linting spaces"));
 		}
 
 		return this.emit('data', file);
